@@ -7,7 +7,7 @@ from Book import Book
 
 
 class Spider:
-    def __init__(self, url):
+    def __init__(self, url='http://www.luoxia.com/guichui/'):
         self.config = Config(url)
         self.book = Book()
         self.session = requests.Session()
@@ -36,7 +36,7 @@ class Spider:
     def getCharpterContent(self, url):
         html = self.request(url)
         content = html.find('div', attrs={'id': 'nr1'}).text
-        return content
+        return re.compile(r'\n').sub(' ', content)
 
     def getBookCharpter(self):
         partsContainer = self.html.find_all(
