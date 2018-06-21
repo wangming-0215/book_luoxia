@@ -36,7 +36,7 @@ class Spider:
     def getCharpterContent(self, url):
         html = self.request(url)
         content = html.find('div', attrs={'id': 'nr1'}).text
-        return re.compile(r'\n').sub(' ', content)
+        return re.sub(r'[\n]|[gg_post_middle();]', ' ', content)
 
     def getBookCharpter(self):
         partsContainer = self.html.find_all(
@@ -63,9 +63,12 @@ class Spider:
                 else:
                     b = li.find('b').attrs['onclick']
                     url = re.search(
-                        r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', b,  re.M | re.I).group()
+                        r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+])+\.htm', b,  re.M | re.I).group()
 
-                print(partList[index] + title)
+                if partList:
+                    print(partList[index] + title)
+                else:
+                    print(title)
 
                 content = self.getCharpterContent(url)
                 chapt = {'title': title, 'url': url, 'content': content}
@@ -81,5 +84,8 @@ class Spider:
         self.book.setBookType(bookType)
         self.book.setDescription(describe)
 
-        for index, item in enumerate(partList):
-            self.book.setContent(item, contents[index])
+        for index, item in enumerate(contents):
+            if not partList:
+                self.book.setContent(name, item)
+            else:
+                self.book.setContent(partList[index], item)
